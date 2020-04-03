@@ -1,5 +1,6 @@
 package com.example.covid19;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -58,5 +62,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng USA = new LatLng(38.360588, -101.367555);
         map.addMarker(new MarkerOptions().position(USA));
         map.moveCamera(CameraUpdateFactory.newLatLng(USA));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case 10:
+                if(resultCode == RESULT_OK && data !=null){
+                    ArrayList<String> res =  data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    speechText.setText(res.get(0));
+                }
+
+                break;
+        }
     }
 }
