@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="40dp">
+
+    <ImageView
+        android:id="@+id/cFlag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_mic_black_24dp"
+    />
+    <TextView
+        android:id="@+id/cname"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:hint="@string/location"
+        android:layout_weight="2"
+        android:padding="5dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        />
+    <TextView
+        android:id="@+id/confirmedCases"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/confirmed"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/recoveredCases"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/recovered"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/deathCases"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/deaths"
+        android:layout_gravity="center"/>
+</LinearLayout>
