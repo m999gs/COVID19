@@ -1,16 +1,15 @@
 package com.example.covid19;
 
 public class D {
-    String country ;
+    String country,code ;
     int confirmed ,recovered ,death;
 
-    int code;
     D(String c,int con,int rec,int dea,String cCode){
         confirmed=con;
         country=c;
         recovered=rec;
         death=dea;
-//        code=cCode;
+        code=cCode;
     }
     public String getCountry(){
         return country;
@@ -28,7 +27,7 @@ public class D {
         return death;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 

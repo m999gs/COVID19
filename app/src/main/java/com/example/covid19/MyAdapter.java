@@ -33,7 +33,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         D temp = list.get(position);
-//        holder.CountryFlag.setImageResource(temp.getCode());
+        String s=temp.getCode().toLowerCase();
+        if(s.equals("do"))s="doo";
+        int id = context.getResources().getIdentifier(s,"drawable",context.getPackageName());
+        holder.CountryFlag.setImageResource(id);
         holder.CountryName.setText(temp.getCountry());
         holder.ConfirmedCases.setText(temp.getConfirmed()+"");
         holder.RecoveredCases.setText(temp.getRecovered()+"");

@@ -62,8 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/micButton"
-        android:layout_below="@+id/fixText"
-        >
+        android:layout_below="@+id/fixText">
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
@@ -74,16 +73,7 @@
         android:textSize="30sp"
         android:layout_margin="15dp"
         android:layout_gravity="center_horizontal"/>
-    <Button
-        android:id="@+id/refreshButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_row="1"
-        android:layout_column="2"
-        android:text="@string/refresh"
-        android:padding="5dp"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"/>
+
     <!--    Mic Button-->
     <ImageButton
         android:layout_width="80dp"
