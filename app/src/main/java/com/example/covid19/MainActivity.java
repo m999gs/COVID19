@@ -113,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             cdata.getString("country"),
                                             cases.getString("confirmed"),
                                             cases.getString("recovered"),
-                                            cases.getString("deaths")
+                                            cases.getString("deaths"),
+                                            cdata.getString("country_code")
                                     );
 
                                     list.add(item);
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                                  @Override
                                                  public int compare(D o1, D o2) {
-                                                     return o1.getConfirmed().compareTo(o2.getConfirmed());
+                                                     return o2.getConfirmed().compareTo(o1.getConfirmed());
                                                  }
                                              }
                             );
