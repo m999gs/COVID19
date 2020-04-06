@@ -2,7 +2,10 @@ package com.example.covid19;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -14,9 +17,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,7 +34,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -33,8 +49,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     GoogleMap map;
     public static TextView speechText;
-
-    public static ArrayList<D> list;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private ArrayList<D> list;
+    private static final String URL_DATA = "https://coronavirus-tracker-api.herokuapp.com/v2/locations";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +61,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        list = new ArrayList<>();
 
-        list.add(new D("India","40000","5000","0"));
         ImageButton micButton =findViewById(R.id.micButton);
         speechText = findViewById(R.id.speechText);
-        Button refreshButton = findViewById(R.id.refreshButton);
-        fetchData process = new fetchData();
 
-        //To fetch the data from the internet.
+        recyclerView = findViewById(R.id.countryList);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        process.execute();
+        list = new ArrayList<>();
 
-        ListView countryList = findViewById(R.id.countryList);
-        customAdapter cA=new customAdapter(this,R.layout.covidcases,list);
-        countryList.setAdapter(cA);
-        for(int i=0;i<list.size();i++){
-            System.out.println(list.get(i).getCountry());
-        }
-        //To put the list data into ListView
-
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fetchData process = new fetchData();
-                process.execute();
-                for(int i=0;i<list.size();i++){
-                    System.out.println(list.get(i).getCountry());
-                }
-            }
-        });
+        loadRecyclerViewData();
 
 
         micButton.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +90,64 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    private void loadRecyclerViewData() {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading Data....");
+        progressDialog.show();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                URL_DATA,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.dismiss();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray array = jsonObject.getJSONArray("locations");
+
+                            for(int i=0;i<array.length();i++){
+                                JSONObject cdata = array.getJSONObject(i);
+                                if(cdata.getString("province").equals("")){
+                                    JSONObject cases = cdata.getJSONObject("latest");
+                                    D item = new D(
+                                            cdata.getString("country"),
+                                            cases.getString("confirmed"),
+                                            cases.getString("recovered"),
+                                            cases.getString("deaths")
+                                    );
+
+                                    list.add(item);
+                                }
+
+                            }
+
+                            Collections.sort(list,new Comparator<D>(){
+
+                                                 @Override
+                                                 public int compare(D o1, D o2) {
+                                                     return o1.getConfirmed().compareTo(o2.getConfirmed());
+                                                 }
+                                             }
+                            );
+                            adapter = new MyAdapter(list,getApplicationContext());
+                            recyclerView.setAdapter(adapter);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
+    }
 
 
     @Override

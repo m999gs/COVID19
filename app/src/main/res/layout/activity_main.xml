@@ -57,14 +57,14 @@
             android:text="@string/deaths"
             android:layout_gravity="center_horizontal"/>
     </LinearLayout>
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/micButton"
         android:layout_below="@+id/fixText"
         >
-    </ListView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
         android:id="@+id/speechText"
