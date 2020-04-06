@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     JSONObject cases = cdata.getJSONObject("latest");
                                     D item = new D(
                                             cdata.getString("country"),
-                                            cases.getString("confirmed"),
-                                            cases.getString("recovered"),
-                                            cases.getString("deaths"),
+                                            (int)cases.get("confirmed"),
+                                            (int)cases.get("recovered"),
+                                            (int)cases.get("deaths"),
                                             cdata.getString("country_code")
                                     );
 
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                                  @Override
                                                  public int compare(D o1, D o2) {
-                                                     return o2.getConfirmed().compareTo(o1.getConfirmed());
+                                                     return o2.getConfirmed()-(o1.getConfirmed());
                                                  }
                                              }
                             );

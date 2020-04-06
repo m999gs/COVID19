@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,11 +33,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         D temp = list.get(position);
-
+//        holder.CountryFlag.setImageResource(temp.getCode());
         holder.CountryName.setText(temp.getCountry());
-        holder.ConfirmedCases.setText(temp.getConfirmed());
-        holder.RecoveredCases.setText(temp.getRecovered());
-        holder.DeathCases.setText(temp.getDeath());
+        holder.ConfirmedCases.setText(temp.getConfirmed()+"");
+        holder.RecoveredCases.setText(temp.getRecovered()+"");
+        holder.DeathCases.setText(temp.getDeath()+"");
     }
 
     @Override
@@ -44,16 +45,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return list.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView CountryName;
-        public TextView ConfirmedCases;
-        public TextView RecoveredCases;
-        public TextView DeathCases;
+        TextView CountryName;
+        TextView ConfirmedCases;
+        TextView RecoveredCases;
+        TextView DeathCases;
+        ImageView CountryFlag;
 
 
-        public ViewHolder(@NonNull View itemView) {
+
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
+            CountryFlag = itemView.findViewById(R.id.cFlag);
             CountryName = itemView.findViewById(R.id.cname);
             ConfirmedCases = itemView.findViewById(R.id.confirmedCases);
             RecoveredCases = itemView.findViewById(R.id.recoveredCases);
