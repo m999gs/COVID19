@@ -10,6 +10,7 @@
     <fragment
         android:layout_width="match_parent"
         android:layout_height="400dp"
+        android:layout_margin="6dp"
         android:id="@+id/map"
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
@@ -61,7 +62,7 @@
         android:id="@+id/countryList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/micButton"
+        android:layout_marginBottom="8dp"
         android:layout_below="@+id/fixText">
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -76,7 +77,7 @@
 
     <!--    Mic Button-->
     <ImageButton
-        android:layout_width="80dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/micButton"
         android:background="@drawable/btn_background"
