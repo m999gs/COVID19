@@ -20,7 +20,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private ArrayList<D> list;
     private Context context;
 
-    public MyAdapter(ArrayList<D> list, Context context) {
+    MyAdapter(ArrayList<D> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -49,7 +49,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 //Put the intent to the other activity
-                Intent i = new Intent(context,CountryWise.class);
+                Intent i = new Intent(v.getContext(),CountryWise.class);
                 i.putExtra("flag",id);
                 i.putExtra("countryname",temp.getCountry());
                 i.putExtra("confirmed",temp.getConfirmed());
@@ -57,7 +57,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 i.putExtra("Death",temp.getDeath());
                 i.putExtra("longitude",temp.getLongitude());
                 i.putExtra("latitude",temp.getLatitude());
-                context.startActivity(i);
+                v.getContext().startActivity(i);
                 Toast.makeText(context,"You clicked "+temp.getCountry(),Toast.LENGTH_SHORT).show();
             }
         });
