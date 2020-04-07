@@ -1,11 +1,14 @@
 package com.example.covid19;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,15 +35,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        D temp = list.get(position);
+        final D temp = list.get(position);
         String s=temp.getCode().toLowerCase();
         if(s.equals("do"))s="doo";
-        int id = context.getResources().getIdentifier(s,"drawable",context.getPackageName());
+        final int id = context.getResources().getIdentifier(s,"drawable",context.getPackageName());
         holder.CountryFlag.setImageResource(id);
         holder.CountryName.setText(temp.getCountry());
         holder.ConfirmedCases.setText(temp.getConfirmed()+"");
         holder.RecoveredCases.setText(temp.getRecovered()+"");
         holder.DeathCases.setText(temp.getDeath()+"");
+
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Put the intent to the other activity
+                Intent i = new Intent(context,CountryWise.class);
+                i.putExtra("flag",id);
+                i.putExtra("countryname",temp.getCountry());
+                i.putExtra("confirmed",temp.getConfirmed());
+                i.putExtra("recovered",temp.getRecovered());
+                i.putExtra("Death",temp.getDeath());
+                i.putExtra("longitude",temp.getLongitude());
+                i.putExtra("latitude",temp.getLatitude());
+                context.startActivity(i);
+                Toast.makeText(context,"You clicked "+temp.getCountry(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
@@ -55,6 +76,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TextView RecoveredCases;
         TextView DeathCases;
         ImageView CountryFlag;
+        LinearLayout linearLayout;
 
 
 
@@ -65,6 +87,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             ConfirmedCases = itemView.findViewById(R.id.confirmedCases);
             RecoveredCases = itemView.findViewById(R.id.recoveredCases);
             DeathCases = itemView.findViewById(R.id.deathCases);
+            linearLayout = itemView.findViewById(R.id.recycleList);
         }
     }
 }

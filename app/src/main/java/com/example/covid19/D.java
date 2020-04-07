@@ -1,21 +1,25 @@
 package com.example.covid19;
 
 public class D {
-    String country,code ;
-    int confirmed ,recovered ,death;
+    private String country, code;
+    private int confirmed, recovered, death;
+    private double latitude, longitude;
 
-    D(String c,int con,int rec,int dea,String cCode){
-        confirmed=con;
-        country=c;
-        recovered=rec;
-        death=dea;
-        code=cCode;
+    D(String c, int con, int rec, int dea, String cCode, String lati, String longi) {
+        confirmed = con;
+        country = c;
+        recovered = rec;
+        death = dea;
+        code = cCode;
+        latitude = Double.parseDouble(lati);
+        longitude = Double.parseDouble(longi);
     }
-    public String getCountry(){
+
+    public String getCountry() {
         return country;
     }
 
-    public int getConfirmed(){
+    public int getConfirmed() {
         return confirmed;
     }
 
@@ -30,5 +34,14 @@ public class D {
     public String getCode() {
         return code;
     }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
 
 }
