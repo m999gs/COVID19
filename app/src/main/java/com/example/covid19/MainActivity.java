@@ -2,11 +2,15 @@ package com.example.covid19;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.RecognizerResultsIntent;
@@ -33,6 +37,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.JsonElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,14 +49,24 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+import ai.api.AIListener;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIService;
+import ai.api.model.AIError;
+import ai.api.model.AIResponse;
+import ai.api.model.Result;
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, AIListener {
 
     GoogleMap map;
-    public static TextView speechText;
+    private TextView speechText;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
+    private ai.api.android.AIService aiService;
     private ArrayList<D> list;
+    private static final int RECORD_AUDIO = 200;
     private static final String URL_DATA = "https://coronavirus-tracker-api.herokuapp.com/v2/locations";
 
     @Override
@@ -64,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ImageButton micButton = findViewById(R.id.micButton);
         speechText = findViewById(R.id.speechText);
+        validateOS();
 
         recyclerView = findViewById(R.id.countryList);
         recyclerView.setHasFixedSize(true);
@@ -72,21 +88,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         list = new ArrayList<>();
 
         if(list.size()==0)loadRecyclerViewData();
-
+        final ai.api.android.AIConfiguration config = new ai.api.android.AIConfiguration("3e0681d619ac43c9a55f1032267c1677",
+                ai.api.android.AIConfiguration.SupportedLanguages.English,
+                AIConfiguration.RecognitionEngine.System) ;
+        aiService = ai.api.android.AIService.getService(this,config);
+        aiService.setListener(this);
 
         micButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, 10);
-                } else
-                    Toast.makeText(getApplicationContext(), "Your Device doesn't support this feature", Toast.LENGTH_SHORT).show();
+                if (v.getId() == R.id.micButton) {
+                    aiService.startListening();
+                }
             }
         });
+
+//        micButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+//                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+//
+//                if (intent.resolveActivity(getPackageManager()) != null) {
+//                    startActivityForResult(intent, 10);
+//                } else
+//                    Toast.makeText(getApplicationContext(), "Your Device doesn't support this feature", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     private void loadRecyclerViewData() {
@@ -162,6 +191,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestQueue.add(stringRequest);
 
     }
+    private void validateOS() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},RECORD_AUDIO);
+        }
+    }
+
 
 
     @Override
@@ -188,4 +223,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @Override
+    public void onResult(AIResponse result) {
+        Result result1 = result.getResult();
+
+        // Get parameters
+        String parameterString = "";
+        if (result1.getParameters() != null && !result1.getParameters().isEmpty()) {
+            for (final Map.Entry<String, JsonElement> entry : result1.getParameters().entrySet()) {
+                parameterString += "(" + entry.getKey() + ", " + entry.getValue();
+            }
+        }
+
+        // show result in textview
+        speechText.setText("Query: " + result1.getResolvedQuery() +
+                "\nAction: " + result1.getFulfillment().toString() +
+                "\nParameters: " + parameterString);
+
+    }
+
+    @Override
+    public void onError(AIError error) {
+        speechText.setText(error.toString());
+    }
+
+    @Override
+    public void onAudioLevel(float level) {
+
+    }
+
+    @Override
+    public void onListeningStarted() {
+
+    }
+
+    @Override
+    public void onListeningCanceled() {
+
+    }
+
+    @Override
+    public void onListeningFinished() {
+
+    }
 }
