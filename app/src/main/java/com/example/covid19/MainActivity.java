@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.RecognizerResultsIntent;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -37,11 +38,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,20 +57,24 @@ import java.util.Map;
 import ai.api.AIListener;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
+import ai.api.android.GsonFactory;
 import ai.api.model.AIError;
 import ai.api.model.AIResponse;
+import ai.api.model.ResponseMessage;
 import ai.api.model.Result;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, AIListener {
 
     GoogleMap map;
     private TextView speechText;
+    private TextToSpeech textToSpeech;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private ai.api.android.AIService aiService;
     private ArrayList<D> list;
     private static final int RECORD_AUDIO = 200;
     private static final String URL_DATA = "https://coronavirus-tracker-api.herokuapp.com/v2/locations";
+    private Gson gson = GsonFactory.getGson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,21 +232,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onResult(AIResponse result) {
+        
         Result result1 = result.getResult();
 
-        // Get parameters
-        String parameterString = "";
-        if (result1.getParameters() != null && !result1.getParameters().isEmpty()) {
-            for (final Map.Entry<String, JsonElement> entry : result1.getParameters().entrySet()) {
-                parameterString += "(" + entry.getKey() + ", " + entry.getValue();
-            }
+        final StringBuilder str = new StringBuilder();
+        for (int i=0;i<result1.getFulfillment().getMessages().size();i++){
+            ResponseMessage.ResponseSpeech responseMessage = (ResponseMessage.ResponseSpeech) result1.getFulfillment().getMessages().get(i);
+            str.append(responseMessage.getSpeech().get(0));
         }
-
         // show result in textview
-        speechText.setText("Query: " + result1.getResolvedQuery() +
-                "\nAction: " + result1.getFulfillment().toString() +
-                "\nParameters: " + parameterString);
+        speechText.setText(str.toString());
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status == TextToSpeech.SUCCESS){
+                    textToSpeech.setLanguage(Locale.ENGLISH);
+                    textToSpeech.speak(str.toString(),TextToSpeech.QUEUE_FLUSH,null);
+                }
+            }
+        });
+    }
 
+    @Override
+    protected void onDestroy() {
+        if(textToSpeech!=null){
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 
     @Override
