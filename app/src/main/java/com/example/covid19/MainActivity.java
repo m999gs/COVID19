@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     GoogleMap map;
     private TextView speechText;
-    private TextToSpeech textToSpeech;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private ai.api.android.AIService aiService;
@@ -105,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.micButton) {
+                    speechText.setText("");
                     aiService.startListening();
                 }
             }
@@ -240,25 +240,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ResponseMessage.ResponseSpeech responseMessage = (ResponseMessage.ResponseSpeech) result1.getFulfillment().getMessages().get(i);
             str.append(responseMessage.getSpeech().get(0));
         }
-        // show result in textview
-        speechText.setText(str.toString());
-        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status == TextToSpeech.SUCCESS){
-                    textToSpeech.setLanguage(Locale.ENGLISH);
-                    textToSpeech.speak(str.toString(),TextToSpeech.QUEUE_FLUSH,null);
-                }
-            }
-        });
+        Intent i =new Intent(getApplicationContext(),PopActivity.class);
+        i.putExtra("message",str.toString());
+        startActivity(i);
+
     }
 
     @Override
     protected void onDestroy() {
-        if(textToSpeech!=null){
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-        }
         super.onDestroy();
     }
 
