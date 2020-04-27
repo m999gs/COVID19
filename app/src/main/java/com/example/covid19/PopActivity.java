@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.Locale;
@@ -25,12 +27,20 @@ public class PopActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         int width = dm.widthPixels;
+        int height = dm.heightPixels;
 
         Intent intent = getIntent();
 
         final String message = (String)intent.getStringExtra("message");
+        ImageButton closeWindow =  findViewById(R.id.closeWindow);
+        getWindow().setLayout((int)(width*.8),(int)(height*.6));
 
-        getWindow().setLayout((int)(width*.8),(int)(width*.7));
+        closeWindow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         speechText2.setText(message);
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
